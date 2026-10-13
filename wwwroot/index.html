@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mini License Management</title>
+
+    
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+
+<body>
+    <div class="app-container">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">LM</div>
+
+                <div>
+                    <p class="eyebrow">LICENSE ADMINISTRATION</p>
+                    <h1>Mini License Management</h1>
+                </div>
+            </div>
+
+            <div class="workspace-badge">
+                <span class="status-dot"></span>
+                License Workspace
+            </div>
+        </header>
+
+        <main>
+            <section class="page-intro">
+                <p class="eyebrow">DASHBOARD</p>
+                <h2>Manage your licenses</h2>
+                <p class="intro-text">
+                    Create, update and manage your software licenses
+                    from one simple workspace.
+                </p>
+            </section>
+
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Create a license</h3>
+                        <p>Add a new license to your records.</p>
+                    </div>
+
+                    <span class="section-tag">NEW LICENSE</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="licenseKey">License Key</label>
+                        <input
+                            id="licenseKey"
+                            type="text"
+                            placeholder="e.g. LIC-2026-001"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="customerName">Customer Name</label>
+                        <input
+                            id="customerName"
+                            type="text"
+                            placeholder="Enter customer name"
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="productName">Product Name</label>
+                        <input
+                            id="productName"
+                            type="text"
+                            placeholder="Enter product name"
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="expirationDate">Expiration Date</label>
+                        <input
+                            id="expirationDate"
+                            type="date"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <p>New licenses are created with Active status.</p>
+
+                    <button
+                        class="primary-button"
+                        type="button"
+                        onclick="createLicense()"
+                    >
+                        <span>+</span> Create License
+                    </button>
+                </div>
+            </section>
+
+            <section class="panel records-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>License Records</h3>
+                        <p>View and manage your existing licenses.</p>
+                    </div>
+
+                    <span class="section-tag">ALL RECORDS</span>
+                </div>
+
+                <div class="table-container">
+                    <table id="licenseTable">
+                        <thead>
+                            <tr>
+                                <th>License Key</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Expiration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="licenseList"></tbody>
+                    </table>
+                </div>
+
+                <div class="table-note">
+                    Use Edit to update a license or Delete to remove it.
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            Mini License Management
+            <span>•</span>
+            Built with ASP.NET Core
+        </footer>
+
+    </div>
+    <!-- Edit License Modal -->
+<div id="editModal" class="modal-overlay" hidden>
+    <section class="edit-modal" role="dialog"
+             aria-modal="true"
+             aria-labelledby="editModalTitle">
+
+        <div class="modal-header">
+            <div>
+                <p class="eyebrow">LICENSE SETTINGS</p>
+                <h2 id="editModalTitle">Edit License</h2>
+                <p class="modal-subtitle">
+                    Update your license information below.
+                </p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeEditModal()"
+                    aria-label="Close">
+                &times;
+            </button>
+        </div>
+
+        <form id="editLicenseForm" onsubmit="saveLicenseEdit(event)">
+            <div class="modal-form-grid">
+
+                <div class="modal-field">
+                    <label for="editLicenseKey">License Key</label>
+                    <input id="editLicenseKey"
+                           type="text"
+                           required>
+                </div>
+
+                <div class="modal-field">
+                    <label for="editCustomerName">Customer Name</label>
+                    <input id="editCustomerName"
+                           type="text"
+                           required>
+                </div>
+
+                <div class="modal-field">
+                    <label for="editProductName">Product Name</label>
+                    <input id="editProductName"
+                           type="text"
+                           required>
+                </div>
+
+                <div class="modal-field">
+                    <label for="editExpirationDate">Expiration Date</label>
+                    <input id="editExpirationDate"
+                           type="date"
+                           required>
+                </div>
+
+            </div>
+
+            <div class="active-setting">
+                <div>
+                    <strong>License status</strong>
+                    <p>Enable or disable this license.</p>
+                </div>
+
+                <label class="toggle-switch">
+                    <input id="editIsActive" type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <div id="editError" class="modal-error" hidden></div>
+
+            <div class="modal-actions">
+                <button type="button"
+                        class="secondary-button"
+                        onclick="closeEditModal()">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="primary-button"
+                        id="saveEditButton">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </section>
+</div>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay" hidden>
+    <section class="edit-modal delete-modal"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="deleteModalTitle">
+
+        <div class="modal-header">
+            <div>
+                <div class="delete-icon">!</div>
+
+                <h2 id="deleteModalTitle">Delete this license?</h2>
+
+                <p class="modal-subtitle">
+                    This action cannot be undone.
+                    The license will be permanently removed.
+                </p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeDeleteModal()"
+                    aria-label="Close">
+                &times;
+            </button>
+        </div>
+
+        <div id="deleteError" class="modal-error" hidden></div>
+
+        <div class="modal-actions">
+            <button type="button"
+                    class="secondary-button"
+                    onclick="closeDeleteModal()">
+                Cancel
+            </button>
+
+            <button type="button"
+                    class="danger-button"
+                    id="deleteConfirmButton"
+                    onclick="confirmDeleteLicense()">
+                Delete License
+            </button>
+        </div>
+    </section>
+</div>
+<script src="app.js?v=3"></script>
+
+    
+</body>
+</html>
